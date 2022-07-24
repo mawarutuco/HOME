@@ -5,28 +5,24 @@ import Btn from "./component/Button";
 
 const Print = ({ text, fontSize, alignItems }) => {
   const navigate = useNavigate();
-  const [notShow, setShow] = useState(false);
+  const [show, setShow] = useState(false);
 
-  //   const textArr = text.split("\n");
-  //   setTimeout(() => {
-  //     window.print();
-  //   }, 10);
   useEffect(() => {
-    setShow(true);
     window.print();
-    setShow(false);
+    setShow(true);
   }, []);
 
   return (
     <>
+      {show && (
+        <Btn
+          value="回去打字"
+          fun={() => {
+            navigate('/');
+          }}
+        />
+      )}
       <Show text={text} fontSize={fontSize} alignItems={alignItems} />
-      <Btn
-        value="回去編輯"
-        fun={() => {
-          navigate("/");
-        }}
-        style={{ display: notShow && "hide" }}
-      />
     </>
   );
 };
