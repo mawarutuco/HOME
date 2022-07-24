@@ -1,11 +1,9 @@
-import axios from "axios";
 import "./App.css";
 import { Container, TextField, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Btn from "./component/Button";
 import Show from "./component/Show";
-// import "http://www.google.com/jsapi";
 
 function App({
   text,
@@ -23,25 +21,15 @@ function App({
 
   const printThis = () => navigate("/print");
 
-  let strURL =
-    "http://translate.google.com.tw/translate_tts?q=" + text + "&tl=ja";
+  const textInput = document.getElementById("textInput");
 
-  // const apiInstance = axios.create({
-  //   baseURL: strURL,
-  //   timeout: 9000,
-  // });
-
-  const googleTranslate=()=>{
-    fetch(`http://www.google.com/jsapi`, {})
-      .then((response) => response.json())
-      .then((jsonData) => {
-        console.log(jsonData);
-      })
-      .catch((err) => {
-        console.log("錯誤:", err);
-      });
+  const googleTranslate = () => {
+    window.open(
+      `https://translate.google.com/?hl=zh-CN&sl=zh-CN&tl=vi&text=${text}&op=translate`
+    );
+    //%0A =>\n
     // setText('')
-  }
+  };
 
   return (
     <Container className="App">
@@ -49,6 +37,7 @@ function App({
       <Show text={text} fontSize={fontSize} alignItems={alignItems} />
       <br />
       <TextField
+        id="textInput"
         label="輸入文字"
         variant="outlined"
         minRows={10}
@@ -58,7 +47,25 @@ function App({
         onChange={(e) => setText(e.target.value)}
       />
       <Btn value="列印" fun={() => printThis()} color="success" />
+      <Btn
+        value="複製"
+        fun={() => {
+          textInput.select();
+          //時好時壞@@
+          document.execCommand("copy");
+        }}
+      />
       <Btn value="翻譯越南文" fun={() => googleTranslate()} color="success" />
+      <Btn
+        value="貼上"
+        fun={() => {
+          // const tmp = window.clipboardData.getData("Text");
+          // navigator.clipboard.readText().then((text) => {
+          //   alert(text);
+          // })
+          // setText(tmp);
+        }}
+      />
       <Btn value="字放大" fun={() => setFontSize((pre) => Number(pre) + 5)} />
       <Btn value="字縮小" fun={() => setFontSize((pre) => Number(pre) - 5)} />
       <Btn value="字靠左" fun={() => setAlignItems("flex-start")} />
@@ -67,7 +74,7 @@ function App({
       <br />
       快速增加文字：
       <Btn
-        value="增加「廖本源0915277990」"
+        value="「廖本源0915277990」"
         fun={() => setText((pre) => pre + "\n廖本源 0915277990")}
       />
       <hr />
@@ -80,17 +87,24 @@ function App({
       <Btn
         value="存檔"
         fun={() => {
-          setHistory((pre) => [{ title, text }, ...pre]);
+          setHistory((pre) => [{ title, text, fontSize, alignItems }, ...pre]);
           localStorage.setItem(
             "history",
-            JSON.stringify([{ title, text }, ...history])
+            JSON.stringify([{ title, text, fontSize, alignItems }, ...history])
           );
           setTitle("");
         }}
       />
       {history.map((n) => (
         <Alert key={n.title}>
-          <Btn value={n.title} fun={() => setText(n.text)} />
+          <Btn
+            value={n.title}
+            fun={() => {
+              setText(n.text);
+              setFontSize(n.fontSize);
+              setAlignItems(n.alignItems);
+            }}
+          />
           <Btn
             value="刪除"
             fun={() =>
