@@ -1,5 +1,5 @@
 import "./App.css";
-import { Container, TextField, Alert } from "@mui/material";
+import { Container, TextField, Alert, ButtonGroup } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Btn from "./component/Button";
@@ -27,7 +27,6 @@ function App({
       `https://translate.google.com/?hl=zh-CN&sl=zh-CN&tl=vi&text=${text}&op=translate`
     );
     //%0A =>\n
-    // setText('')
   };
 
   return (
@@ -39,45 +38,64 @@ function App({
         id="textInput"
         label="輸入文字"
         variant="outlined"
-        minRows={10}
         fullWidth
         multiline
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Btn value="列印" doClick={() => printThis()} color="success" />
-      <Btn
-        value="翻譯越南文"
-        doClick={() => googleTranslate()}
-        color="success"
-      />
-      <Btn
-        value="貼上"
-        doClick={() => {
-          // const tmp = window.clipboardData.getData("Text");
-          // navigator.clipboard.readText().then((text) => {
-          //   alert(text);
-          // })
-          // setText(tmp);
-        }}
-      />
-      <Btn
-        value="字放大"
-        doClick={() => setFontSize((pre) => Number(pre) + 5)}
-      />
-      <Btn
-        value="字縮小"
-        doClick={() => setFontSize((pre) => Number(pre) - 5)}
-      />
-      <Btn value="字靠左" doClick={() => setAlignItems("flex-start")} />
-      <Btn value="字中間" doClick={() => setAlignItems("center")} />
-      <Btn value="清空" doClick={() => setText("")} color="error" />
+      <ButtonGroup>
+        <Btn value="列印" doClick={() => printThis()} color="success" />
+        <Btn value="清空" doClick={() => setText("")} color="error" />
+      </ButtonGroup>
+      <br />
+      調整：
+      <ButtonGroup>
+        <Btn
+          value="字放大"
+          doClick={() => setFontSize((pre) => Number(pre) + 5)}
+        />
+        <Btn
+          value="字縮小"
+          doClick={() => setFontSize((pre) => Number(pre) - 5)}
+        />
+        <Btn value="字靠左" doClick={() => setAlignItems("flex-start")} />
+        <Btn value="字中間" doClick={() => setAlignItems("center")} />
+      </ButtonGroup>
+      <br />
+      翻譯：
+      <ButtonGroup>
+        <Btn value="翻譯越南文" doClick={() => googleTranslate()} />
+        {/* 記得點這個<img src="/copy.png"/> */}
+        <Btn
+          value="貼上剛複製的文字"
+          doClick={() => {
+            setTimeout(async () => {
+              let tmp = await window.navigator.clipboard.readText();
+              setText(tmp);
+            }, 0);
+          }}
+        />
+      </ButtonGroup>
       <br />
       快速增加文字：
-      <Btn
-        value="「廖本源0915277990」"
-        doClick={() => setText((pre) => pre + "\n廖本源 0915277990")}
-      />
+      <ButtonGroup>
+        <Btn
+          value="「廖本源0915277990」"
+          doClick={() => setText((pre) => pre + "\n廖本源 0915277990")}
+        />
+        <Btn value="「，」" doClick={() => setText((pre) => pre + "，")} />
+        <Btn value="「。」" doClick={() => setText((pre) => pre + "。")} />
+        <Btn
+          value="今天日期"
+          doClick={() => {
+            let today = new Date()
+              .toISOString()
+              .split("T")[0]
+              .replaceAll("-", "/");
+            setText((pre) => `${pre} ${today}`);
+          }}
+        />
+      </ButtonGroup>
       <hr />
       <TextField
         label="這份檔名"
