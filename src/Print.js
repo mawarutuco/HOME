@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useMemo } from "react";
 import Show from "./component/Show";
 import Btn from "./component/Button";
 
@@ -12,13 +12,18 @@ const Print = ({ text, fontSize, alignItems }) => {
     setShow(true);
   }, []);
 
+  // useMemo(() => {
+  //   window.print();
+  //   setShow(true);
+  // }, [window.print()]);
+
   return (
     <>
       {show && (
         <Btn
           value="回去打字"
-          fun={() => {
-            navigate('/');
+          doClick={() => {
+            navigate("/");
           }}
         />
       )}

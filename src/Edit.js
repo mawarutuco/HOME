@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Btn from "./component/Button";
 import Show from "./component/Show";
+import { v4 as uuidv4 } from "uuid";
 
 function App({
   text,
@@ -20,8 +21,6 @@ function App({
   const [title, setTitle] = useState("");
 
   const printThis = () => navigate("/print");
-
-  const textInput = document.getElementById("textInput");
 
   const googleTranslate = () => {
     window.open(
@@ -46,19 +45,15 @@ function App({
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
-      <Btn value="列印" fun={() => printThis()} color="success" />
+      <Btn value="列印" doClick={() => printThis()} color="success" />
       <Btn
-        value="複製"
-        fun={() => {
-          textInput.select();
-          //時好時壞@@
-          document.execCommand("copy");
-        }}
+        value="翻譯越南文"
+        doClick={() => googleTranslate()}
+        color="success"
       />
-      <Btn value="翻譯越南文" fun={() => googleTranslate()} color="success" />
       <Btn
         value="貼上"
-        fun={() => {
+        doClick={() => {
           // const tmp = window.clipboardData.getData("Text");
           // navigator.clipboard.readText().then((text) => {
           //   alert(text);
@@ -66,16 +61,22 @@ function App({
           // setText(tmp);
         }}
       />
-      <Btn value="字放大" fun={() => setFontSize((pre) => Number(pre) + 5)} />
-      <Btn value="字縮小" fun={() => setFontSize((pre) => Number(pre) - 5)} />
-      <Btn value="字靠左" fun={() => setAlignItems("flex-start")} />
-      <Btn value="字中間" fun={() => setAlignItems("center")} />
-      <Btn value="清空" fun={() => setText("")} color="error" />
+      <Btn
+        value="字放大"
+        doClick={() => setFontSize((pre) => Number(pre) + 5)}
+      />
+      <Btn
+        value="字縮小"
+        doClick={() => setFontSize((pre) => Number(pre) - 5)}
+      />
+      <Btn value="字靠左" doClick={() => setAlignItems("flex-start")} />
+      <Btn value="字中間" doClick={() => setAlignItems("center")} />
+      <Btn value="清空" doClick={() => setText("")} color="error" />
       <br />
       快速增加文字：
       <Btn
         value="「廖本源0915277990」"
-        fun={() => setText((pre) => pre + "\n廖本源 0915277990")}
+        doClick={() => setText((pre) => pre + "\n廖本源 0915277990")}
       />
       <hr />
       <TextField
@@ -86,20 +87,27 @@ function App({
       />
       <Btn
         value="存檔"
-        fun={() => {
-          setHistory((pre) => [{ title, text, fontSize, alignItems }, ...pre]);
+        doClick={() => {
+          const nowID = uuidv4();
+          setHistory((pre) => [
+            { id: nowID, title, text, fontSize, alignItems },
+            ...pre,
+          ]);
           localStorage.setItem(
             "history",
-            JSON.stringify([{ title, text, fontSize, alignItems }, ...history])
+            JSON.stringify([
+              { id: nowID, title, text, fontSize, alignItems },
+              ...history,
+            ])
           );
           setTitle("");
         }}
       />
       {history.map((n) => (
-        <Alert key={n.title}>
+        <Alert key={n.id}>
           <Btn
             value={n.title}
-            fun={() => {
+            doClick={() => {
               setText(n.text);
               setFontSize(n.fontSize);
               setAlignItems(n.alignItems);
@@ -107,9 +115,10 @@ function App({
           />
           <Btn
             value="刪除"
-            fun={() =>
-              setHistory((pre) => pre.filter((m) => m.title !== n.title))
+            doClick={() =>
+              setHistory((pre) => pre.filter((m) => m.id !== n.id))
             }
+            color="error"
           />
         </Alert>
       ))}
