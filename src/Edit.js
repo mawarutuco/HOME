@@ -2,6 +2,7 @@ import "./App.css";
 import { Container, TextField, Alert, ButtonGroup } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Swal from "sweetalert2";
 import Btn from "./component/Button";
 import Show from "./component/Show";
 import { v4 as uuidv4 } from "uuid";
@@ -45,7 +46,19 @@ function App({
       />
       <ButtonGroup>
         <Btn value="列印" doClick={() => printThis()} color="success" />
-        <Btn value="清空" doClick={() => setText("")} color="error" />
+        <Btn
+          value="清空"
+          doClick={() => {
+            Swal.fire({
+              icon: "question",
+              title: "清空所有文字囉?",
+              showCancelButton: true,
+            }).then((result) => {
+              if (result.isConfirmed) setText("");
+            });
+          }}
+          color="error"
+        />
       </ButtonGroup>
       <br />
       調整：
@@ -85,6 +98,10 @@ function App({
         />
         <Btn value="「，」" doClick={() => setText((pre) => pre + "，")} />
         <Btn value="「。」" doClick={() => setText((pre) => pre + "。")} />
+        <Btn
+          value="重複目前所有文字"
+          doClick={() => setText((pre) => `${pre}\n${pre}`)}
+        />
         <Btn
           value="今天日期"
           doClick={() => {
