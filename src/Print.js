@@ -7,9 +7,13 @@ const Print = ({ text, fontSize, alignItems }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
+  let firstTime = true;
   useEffect(() => {
-    window.print();
-    setShow(true);
+    if (firstTime) {
+      window.print();
+      setShow(true);
+      firstTime = false;
+    }
   }, []);
 
   return (
@@ -18,7 +22,7 @@ const Print = ({ text, fontSize, alignItems }) => {
         <Btn
           value="回去打字"
           doClick={() => {
-            navigate("/");
+            navigate("/HOME");
           }}
         />
       )}

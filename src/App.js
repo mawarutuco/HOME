@@ -22,7 +22,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route
-          path=""
+          path="/HOME"
           element={
             <Edit
               text={text}
