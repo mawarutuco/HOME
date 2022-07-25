@@ -1,8 +1,13 @@
 import { Button } from "@mui/material";
 
-const HomeButton = ({ value, doClick, color = "primary" }) => {
+const HomeButton = ({
+  value,
+  doClick,
+  color = "primary",
+  variant = "outlined",
+}) => {
   return (
-    <Button variant="outlined" onClick={doClick} color={color} size='large'>
+    <Button variant={variant} onClick={doClick} color={color} size="large">
       {value}
     </Button>
   );
