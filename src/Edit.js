@@ -117,7 +117,7 @@ function App({
 
             if (Number(times)) {
               //要換行
-              setText((pre) => pre.repeat(times));
+              setText((pre) => (pre + "\n").repeat(times));
             }
           }}
         />
