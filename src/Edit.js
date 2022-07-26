@@ -19,8 +19,6 @@ function App({
   let tmp = JSON.parse(localStorage.getItem("history"));
   const [history, setHistory] = useState(tmp || []);
 
-  const [title, setTitle] = useState("");
-
   const printThis = () => navigate("/print");
 
   const googleTranslate = () => {
@@ -114,28 +112,30 @@ function App({
         />
       </ButtonGroup>
       <hr />
-      <TextField
-        label="這份檔名"
-        variant="outlined"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
       <Btn
         value="存檔"
-        doClick={() => {
-          const nowID = uuidv4();
-          setHistory((pre) => [
-            { id: nowID, title, text, fontSize, alignItems },
-            ...pre,
-          ]);
-          localStorage.setItem(
-            "history",
-            JSON.stringify([
+        doClick={async () => {
+          const { value: title } = await Swal.fire({
+            title: '請輸入標題',
+            input: 'text',
+            inputPlaceholder: '例如：不要亂丟垃圾、不要在這裡餵貓',
+            showCancelButton: true,
+          })
+
+          if (title) {
+            const nowID = uuidv4();
+            setHistory((pre) => [
               { id: nowID, title, text, fontSize, alignItems },
-              ...history,
-            ])
-          );
-          setTitle("");
+              ...pre,
+            ]);
+            localStorage.setItem(
+              "history",
+              JSON.stringify([
+                { id: nowID, title, text, fontSize, alignItems },
+                ...history,
+              ])
+            );
+          }
         }}
       />
       {history.map((n) => (
