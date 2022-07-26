@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Show from "./component/Show";
 import Btn from "./component/Button";
 
@@ -7,13 +7,13 @@ const Print = ({ text, fontSize, alignItems }) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
 
-  let firstTime = true;
+  let firstTime = useRef(true);
   useEffect(() => {
-    if (firstTime) {
+    if (firstTime.current) {
       window.print();
       setShow(true);
-      firstTime = false;
     }
+    firstTime.current = false;
   }, []);
 
   return (
