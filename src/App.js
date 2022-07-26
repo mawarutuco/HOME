@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Edit from "./Edit";
 import Print from "./Print";
@@ -19,7 +19,7 @@ const App = () => {
   }, [text, fontSize, alignItems]);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route
           path="/HOME"
@@ -39,7 +39,7 @@ const App = () => {
           element={<Print text={text} fontSize={fontSize} alignItems={alignItems}/>}
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
