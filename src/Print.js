@@ -22,7 +22,7 @@ const Print = ({ text, fontSize, alignItems }) => {
         <Btn
           value="回去打字"
           doClick={() => {
-            navigate("/HOME");
+            navigate("/");
           }}
         />
       )}

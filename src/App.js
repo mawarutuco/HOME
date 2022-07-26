@@ -22,7 +22,7 @@ const App = () => {
     <HashRouter>
       <Routes>
         <Route
-          path="/HOME"
+          path="/"
           element={
             <Edit
               text={text}
