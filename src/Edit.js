@@ -1,7 +1,7 @@
 import "./App.css";
-import { Container, TextField, Alert, ButtonGroup } from "@mui/material";
+import { Container, TextField, ButtonGroup, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Btn from "./component/Button";
 import Show from "./component/Show";
@@ -16,10 +16,17 @@ function App({
   setAlignItems,
 }) {
   const navigate = useNavigate();
-  let tmp = JSON.parse(localStorage.getItem("history"));
-  const [history, setHistory] = useState(tmp || []);
+  let historyTmp = JSON.parse(localStorage.getItem("history"));
+  const [history, setHistory] = useState(historyTmp || []);
+
+  useEffect(() => {
+    localStorage.setItem("history", JSON.stringify(history));
+  }, [history]);
 
   const printThis = () => navigate("/print");
+
+  const [drawerShow, setDrawerShow] = useState(false);
+  const toggleDrawer = () => setDrawerShow((pre) => (pre = !pre));
 
   const googleTranslate = () => {
     window.open(
@@ -27,6 +34,8 @@ function App({
     );
     //%0A =>\n
   };
+
+  let today = new Date().toISOString().split("T")[0].replaceAll("-", "/");
 
   return (
     <Container className="App">
@@ -98,65 +107,78 @@ function App({
         <Btn value="「。」" doClick={() => setText((pre) => pre + "。")} />
         <Btn
           value="重複目前所有文字"
-          doClick={() => setText((pre) => `${pre}\n${pre}`)}
+          doClick={async () => {
+            const { value: times } = await Swal.fire({
+              title: "重複次數是?",
+              input: "text",
+              inputValue: "5",
+              showCancelButton: true,
+            });
+
+            if (Number(times)) {
+              //要換行
+              setText((pre) => pre.repeat(times));
+            }
+          }}
         />
         <Btn
           value="今天日期"
           doClick={() => {
-            let today = new Date()
-              .toISOString()
-              .split("T")[0]
-              .replaceAll("-", "/");
             setText((pre) => `${pre} ${today}`);
           }}
         />
       </ButtonGroup>
       <hr />
-      <Btn
-        value="存檔"
-        doClick={async () => {
-          const { value: title } = await Swal.fire({
-            title: '請輸入標題',
-            input: 'text',
-            inputPlaceholder: '例如：不要亂丟垃圾、不要在這裡餵貓',
-            showCancelButton: true,
-          })
+      <ButtonGroup>
+        <Btn
+          value="存檔"
+          doClick={async () => {
+            const { value: title } = await Swal.fire({
+              title: "請輸入標題，沒標題不會存檔歐",
+              input: "text",
+              inputPlaceholder: "例如：不要亂丟垃圾、不要在這裡餵貓",
+              showCancelButton: true,
+            });
 
-          if (title) {
-            const nowID = uuidv4();
-            setHistory((pre) => [
-              { id: nowID, title, text, fontSize, alignItems },
-              ...pre,
-            ]);
-            localStorage.setItem(
-              "history",
-              JSON.stringify([
-                { id: nowID, title, text, fontSize, alignItems },
-                ...history,
-              ])
-            );
-          }
-        }}
-      />
-      {history.map((n) => (
-        <Alert key={n.id}>
-          <Btn
-            value={n.title}
-            doClick={() => {
-              setText(n.text);
-              setFontSize(n.fontSize);
-              setAlignItems(n.alignItems);
-            }}
-          />
-          <Btn
-            value="刪除"
-            doClick={() =>
-              setHistory((pre) => pre.filter((m) => m.id !== n.id))
+            if (title) {
+              setHistory((pre) => [
+                {
+                  id: uuidv4(),
+                  title,
+                  text,
+                  fontSize,
+                  alignItems,
+                  date: today,
+                },
+                ...pre,
+              ]);
             }
-            color="error"
-          />
-        </Alert>
-      ))}
+          }}
+        />
+        <Btn value="打開之前存檔的" doClick={toggleDrawer} />
+      </ButtonGroup>
+      <Drawer open={drawerShow} onClose={toggleDrawer}>
+        <h1>之前存檔過的</h1>
+        {history.map((n) => (
+          <ButtonGroup key={n.id}>
+            <Btn
+              value={n.title + " ->" + n.date}
+              doClick={() => {
+                setText(n.text);
+                setFontSize(n.fontSize);
+                setAlignItems(n.alignItems);
+              }}
+            />
+            <Btn
+              value="刪除"
+              doClick={() =>
+                setHistory((pre) => pre.filter((m) => m.id !== n.id))
+              }
+              color="error"
+            />
+          </ButtonGroup>
+        ))}
+      </Drawer>
     </Container>
   );
 }
