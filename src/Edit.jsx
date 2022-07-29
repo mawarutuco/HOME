@@ -98,7 +98,7 @@ function App({
   let today = new Date().toISOString().split("T")[0].replaceAll("-", "/");
 
   return (
-    <Container className="home-container">
+    <Container>
       <Stack mt={2} alignItems="flex-end">
         <ButtonGroup>
           <Btn value="存檔" color="success" doClick={save} />
