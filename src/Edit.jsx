@@ -68,6 +68,33 @@ function App({
     }
   };
 
+  const clear = () => {
+    Swal.fire({
+      icon: "question",
+      title: "清空所有文字囉?",
+      showCancelButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) setText("");
+    });
+  };
+
+  const adjustFrontSize = (detail) => {
+    setFontSize((pre) => Number(pre) + detail);
+  };
+
+  const repeatText = async () => {
+    const { value: times } = await Swal.fire({
+      title: "重複次數是?",
+      input: "text",
+      inputValue: "5",
+      showCancelButton: true,
+    });
+
+    if (Number(times)) {
+      setText((pre) => (pre + "\n").repeat(times));
+    }
+  };
+
   let today = new Date().toISOString().split("T")[0].replaceAll("-", "/");
 
   return (
@@ -75,7 +102,8 @@ function App({
       <Stack mt={2} alignItems="flex-end">
         <ButtonGroup>
           <Btn value="存檔" color="success" doClick={save} />
-          <Btn value="打開之前存檔的" doClick={toggleDrawer} />
+          <Btn value="打開之前存檔的" color="success" doClick={toggleDrawer} />
+          <Btn value="清空" doClick={clear} color="error" />
         </ButtonGroup>
       </Stack>
       <Stack spacing={2}>
@@ -88,18 +116,14 @@ function App({
           onChange={(e) => setText(e.target.value)}
         />
         <ButtonGroup>
-          <Btn
-            value="翻譯越南文"
-            doClick={() => googleTranslate()}
-            color="success"
-          />
+          <Btn value="翻譯越南文" doClick={googleTranslate} color="success" />
           {/* 記得點這個<img src="/copy.png"/> */}
           <Btn
             value="貼上剛複製的文字"
             doClick={() => {
               setTimeout(async () => {
-                let tmp = await window.navigator.clipboard.readText();
-                setText(tmp);
+                let clipText = await window.navigator.clipboard.readText();
+                setText(clipText);
               }, 0);
             }}
           />
@@ -132,88 +156,80 @@ function App({
           </Container>
         </Drawer>
         <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <h3>打word會用到的工具 (點了可以展開)</h3>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <h3>列印會用到的工具 (點了可以展開)</h3>
           </AccordionSummary>
           <AccordionDetails>
             <Stack spacing={4}>
-              <ButtonGroup>
-                <Btn value="列印" doClick={() => printThis()} color="success" />
+              <Stack justifyContent="center">
                 <Btn
-                  value="清空"
-                  doClick={() => {
-                    Swal.fire({
-                      icon: "question",
-                      title: "清空所有文字囉?",
-                      showCancelButton: true,
-                    }).then((result) => {
-                      if (result.isConfirmed) setText("");
-                    });
-                  }}
-                  color="error"
+                  value="列印"
+                  doClick={printThis}
+                  color="success"
+                  variant="contained"
                 />
-              </ButtonGroup>
+              </Stack>
               <h1>預覽畫面：</h1>
               <Show text={text} fontSize={fontSize} alignItems={alignItems} />
 
-              <ButtonGroup>
-                調整文字：
-                <Btn
-                  value="字放大"
-                  doClick={() => setFontSize((pre) => Number(pre) + 5)}
-                />
-                <Btn
-                  value="字縮小"
-                  doClick={() => setFontSize((pre) => Number(pre) - 5)}
-                />
-                <Btn
-                  value="字靠左"
-                  doClick={() => setAlignItems("flex-start")}
-                />
-                <Btn value="字中間" doClick={() => setAlignItems("center")} />
-              </ButtonGroup>
+              <Stack direction="row" spacing={2} justifyContent="center">
+                <ButtonGroup orientation="vertical">
+                  <div>調整文字</div>
+                  <Btn
+                    value="放大"
+                    doClick={() => adjustFrontSize(5)}
+                    color="warning"
+                  />
+                  <Btn
+                    value="縮小"
+                    doClick={() => adjustFrontSize(-5)}
+                    color="warning"
+                  />
+                  <Btn
+                    value="靠左"
+                    doClick={() => setAlignItems("flex-start")}
+                    color="secondary"
+                  />
+                  <Btn
+                    value="中間"
+                    doClick={() => setAlignItems("center")}
+                    color="secondary"
+                  />
+                </ButtonGroup>
 
-              <ButtonGroup>
-                快速增加文字：
-                <Btn
-                  value="「廖本源0915277990」"
-                  doClick={() => setText((pre) => pre + "\n廖本源 0915277990")}
-                />
-                <Btn
-                  value="「，」"
-                  doClick={() => setText((pre) => pre + "，")}
-                />
-                <Btn
-                  value="「。」"
-                  doClick={() => setText((pre) => pre + "。")}
-                />
-                <Btn
-                  value="重複目前所有文字"
-                  doClick={async () => {
-                    const { value: times } = await Swal.fire({
-                      title: "重複次數是?",
-                      input: "text",
-                      inputValue: "5",
-                      showCancelButton: true,
-                    });
-
-                    if (Number(times)) {
-                      //要換行
-                      setText((pre) => (pre + "\n").repeat(times));
+                <ButtonGroup orientation="vertical">
+                  <div>快速增加文字</div>
+                  <Btn
+                    value="「廖本源0915277990」"
+                    doClick={() =>
+                      setText((pre) => pre + "\n廖本源 0915277990")
                     }
-                  }}
-                />
-                <Btn
-                  value="今天日期"
-                  doClick={() => {
-                    setText((pre) => `${pre} ${today}`);
-                  }}
-                />
-              </ButtonGroup>
+                    color="secondary"
+                  />
+                  <Btn
+                    value="逗號"
+                    doClick={() => setText((pre) => pre + "，")}
+                    color="secondary"
+                  />
+                  <Btn
+                    value="句號"
+                    doClick={() => setText((pre) => pre + "。")}
+                    color="secondary"
+                  />
+                  <Btn
+                    value="重複目前所有文字"
+                    doClick={repeatText}
+                    color="warning"
+                  />
+                  <Btn
+                    value="今天日期"
+                    doClick={() => {
+                      setText((pre) => `${pre} ${today}`);
+                    }}
+                    color="warning"
+                  />
+                </ButtonGroup>
+              </Stack>
             </Stack>
           </AccordionDetails>
         </Accordion>
