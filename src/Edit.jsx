@@ -97,6 +97,17 @@ function App({
 
   let today = new Date().toISOString().split("T")[0].replaceAll("-", "/");
 
+  const [imgRes, setImgRes] = useState("");
+  const changeImg = () => {
+    let URL = `https://source.unsplash.com/random`;
+    fetch(URL, {})
+      .then(function (res) {
+        setImgRes(res.url);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+  };
   return (
     <Container>
       <Stack mt={2} alignItems="flex-end">
@@ -231,6 +242,14 @@ function App({
                 </ButtonGroup>
               </Stack>
             </Stack>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} onClick={changeImg}>
+            <h3>隨機圖片 (點了可以展開)</h3>
+          </AccordionSummary>
+          <AccordionDetails>
+            <img style={{width:'100%'}} src={imgRes} onClick={changeImg} alt="隨機圖" />
           </AccordionDetails>
         </Accordion>
       </Stack>
